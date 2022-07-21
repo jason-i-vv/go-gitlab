@@ -20,6 +20,7 @@ package gitlab
 import (
 	"bytes"
 	"context"
+	"crypto/tls"
 	"encoding/json"
 	"fmt"
 	"io"
@@ -270,6 +271,14 @@ func NewOAuthClient(token string, options ...ClientOptionFunc) (*Client, error) 
 	client.authType = OAuthToken
 	client.token = token
 	return client, nil
+}
+
+func SetInsecureSkipVerify(c *Client) error {
+	tr := &http.Transport{
+		TLSClientConfig: &tls.Config{InsecureSkipVerify: true},
+	}
+	c.client.HTTPClient.Transport = tr
+	return nil
 }
 
 func newClient(options ...ClientOptionFunc) (*Client, error) {
